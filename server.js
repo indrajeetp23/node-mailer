@@ -5,26 +5,27 @@ import cors from "cors";
 
 dotenv.config();
 
-
-
-
 const app = express();
+
+// ✅ Enable CORS for frontend
 app.use(cors({
-  origin: "*" // ya sirf frontend domain: "https://your-frontend.vercel.app"
+  origin: "*" // optional: replace "*" with your Vercel frontend URL for security
 }));
+
 app.use(express.json());
 
+// ✅ Nodemailer transporter (Gmail App Password)
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 465,
-  secure: true, // 465 ke liye true
+  secure: true, // true for 465
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS, // 16-char App Password
+    pass: process.env.EMAIL_PASS, // 16-char Gmail App Password
   },
 });
 
-
+// ✅ POST route to send email
 app.post("/send-mail", async (req, res) => {
   const { name, email, message } = req.body;
 
@@ -40,16 +41,17 @@ app.post("/send-mail", async (req, res) => {
       `,
     });
 
-    res.json({ success: true, message: "Mail sent" });
-  }catch (err) {
+    res.json({ success: true, message: "Mail sent successfully ✅" });
+  } catch (err) {
     console.error("MAIL ERROR 👉", err);
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
+    res.status(500).json({ success: false, message: err.message });
   }
 });
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+
+// ✅ Optional GET route to check backend is alive
+app.get("/send-mail", (req, res) => {
+  res.send("Backend is alive! Use POST /send-mail to send emails.");
 });
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
