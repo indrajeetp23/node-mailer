@@ -9,16 +9,21 @@ dotenv.config();
 
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: "*" // ya sirf frontend domain: "https://your-frontend.vercel.app"
+}));
 app.use(express.json());
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true, // 465 ke liye true
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    pass: process.env.EMAIL_PASS, // 16-char App Password
   },
 });
+
 
 app.post("/send-mail", async (req, res) => {
   const { name, email, message } = req.body;
