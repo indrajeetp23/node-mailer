@@ -1,39 +1,27 @@
 import express from "express";
-import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import cors from "cors";
+import sgMail from "@sendgrid/mail";
 
 dotenv.config();
 
 const app = express();
 
-// ✅ Enable CORS for frontend
-app.use(cors({
-  origin: "*" // optional: replace "*" with your Vercel frontend URL for security
-}));
-
+// ✅ Enable CORS
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 
-// ✅ Nodemailer transporter (Gmail App Password)
-const transporter = nodemailer.createTransport({
-  host: "smtp.sendgrid.net",
-  port: 587,         // TLS
-  secure: false,     // false for 587
-  auth: {
-    user: "apikey",  // literally "apikey"
-    pass: process.env.SENDGRID_API_KEY, // ENV me rakho
-  },
-});
-
+// ✅ SendGrid API Key
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // ✅ POST route to send email
 app.post("/send-mail", async (req, res) => {
   const { name, email, message } = req.body;
 
   try {
-    await transporter.sendMail({
-      from: email,
-      to: process.env.EMAIL_USER,
+    await sgMail.send({
+      to: process.env.EMAIL_USER,      // Your verified SendGrid email
+      from: process.env.EMAIL_USER,    // Sender email must be verified
       subject: `New Contact Message from ${name}`,
       html: `
         <p><b>Name:</b> ${name}</p>
