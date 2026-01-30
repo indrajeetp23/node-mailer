@@ -16,14 +16,15 @@ app.use(express.json());
 
 // ✅ Nodemailer transporter (Gmail App Password)
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true, // true for 465
+  host: "smtp.sendgrid.net",
+  port: 587,         // TLS
+  secure: false,     // false for 587
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS, // 16-char Gmail App Password
+    user: "apikey",  // literally "apikey"
+    pass: process.env.SENDGRID_API_KEY, // ENV me rakho
   },
 });
+
 
 // ✅ POST route to send email
 app.post("/send-mail", async (req, res) => {
